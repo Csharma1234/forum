@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Page Student Payment Form</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Razorpay Checkout Script -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .form-page { display: none; animation: fadeIn 0.5s; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .active-page { display: block; }
+        .progress-bar-fill { transition: width 0.4s ease-in-out; }
+        /* Custom focus color for floating labels */
+        .peer:focus ~ label, .peer:not(:placeholder-shown) ~ label {
+             --tw-text-opacity: 1;
+             color: rgb(234 88 12 / var(--tw-text-opacity));
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+    <!-- Main container with responsive padding -->
+    <div class="w-full max-w-3xl bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8 m-4">
+        <!-- Responsive title -->
+        <h1 id="formTitle" class="text-xl sm:text-2xl font-bold text-center text-gray-800 mb-2">Registration</h1>
+        <p class="text-center text-gray-500 mb-6">Complete the steps to enroll.</p>
+
+        <!-- Progress Bar (now 4 steps) -->
+        <div class="w-full bg-gray-200 rounded-full h-2.5 mb-8">
+            <div id="progressBar" class="bg-orange-600 h-2.5 rounded-full progress-bar-fill" style="width: 25%;"></div>
+        </div>
+
+        <!-- Form Container -->
+        <form id="studentForm">
+            <!-- Page 1: Course Selection -->
+            <div id="page1" class="form-page active-page">
+                <h2 class="text-lg sm:text-xl font-semibold mb-6 text-gray-700">Step 1: Choose Your Course</h2>
+                <div class="grid grid-cols-1 gap-6">
+                    <div>
+                        <label for="course_name" class="text-sm text-gray-500">Course</label>
+                        <select id="course_name" name="course_name" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2.5 focus:border-orange-500 focus:ring-orange-500" required>
+                           <optgroup label="TECHNICAL/CSE DOMAINS">
+                               <option>Data Science</option>
+                               <option>Artificial Intelligence</option>
+                               <option>Machine Learning</option>
+                               <option>Web Development</option>
+                               <option>App Development</option>
+                               <option>Cloud Computing</option>
+                               <option>Cyber Security</option>
+                           </optgroup>
+                           <optgroup label="ECE/EEE">
+                               <option>Drone Engineering</option>
+                               <option>Embedded Systems</option>
+                               <option>VLSI</option>
+                               <option>IoT and Robotics with Hardware Kit</option>
+                               <option>Hybrid and Electric Vehicles</option>
+                           </optgroup>
+                           <optgroup label="BIO-TECH DOMAINS">
+                               <option>Bio Informatics</option>
+                               <option>Genetic Engineering</option>
+                               <option>Micro Biology</option>
+                               <option>Molecular Biology</option>
+                               <option>Nano Technology</option>
+                           </optgroup>
+                           <optgroup label="MANAGEMENT DOMAINS">
+                               <option>Digital Marketing</option>
+                               <option>Finance</option>
+                               <option>Human Resource Management</option>
+                               <option>Stock Marketing</option>
+                               <option>Marketing Management</option>
+                               <option>Investment Banking</option>
+                               <option>Social Media Marketing</option>
+                           </optgroup>
+                           <optgroup label="MECH/CIVIL">
+                               <option>AutoCAD</option>
+                               <option>Car Designing</option>
+                               <option>Construction Planning and Structural Analysis</option>
+                           </optgroup>
+                           <optgroup label="PRO DOMAINS">
+                               <option>Graphic Designing</option>
+                               <option>AR/VR</option>
+                               <option>UI/UX</option>
+                               <option>Metaverse</option>
+                               <option>Bitcoin/Blockchain</option>
+                               <option>Data Analytics</option>
+                               <option>Web 3</option>
+                           </optgroup>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="course_type" class="text-sm text-gray-500">Type of Course</label>
+                        <select id="course_type" name="course_type" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2.5 focus:border-orange-500 focus:ring-orange-500" required>
+                            <option value="Blended">Blended</option>
+                            <option value="Mentorship">Mentorship</option>
+                            <option value="Self-Paced">Self-Paced</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex justify-end mt-8">
+                    <!-- Responsive button -->
+                    <button type="button" onclick="handleNextFromCourseSelection()" class="text-white bg-orange-600 hover:bg-orange-700 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm w-full sm:w-auto px-8 py-2.5 text-center">Next</button>
+                </div>
+            </div>
+
+            <!-- Page 2: Basic Details & Mentor Info -->
+            <div id="page2" class="form-page">
+                 <h2 class="text-lg sm:text-xl font-semibold mb-1 text-gray-700">Step 2: Your Details</h2>
+                 <h3 id="mentor-course-title" class="text-base sm:text-lg font-bold text-orange-600 mb-4"></h3>
+                 <p id="mentor-course-description" class="text-gray-600 mb-6"></p>
+
+                 <!-- Responsive mentor section -->
+                 <div class="flex flex-col md:flex-row items-center bg-gray-50 p-4 sm:p-6 rounded-lg mb-8">
+                    <div class="flex-shrink-0 mb-4 md:mb-0 md:mr-6">
+                        <img id="mentor-image" src="https://placehold.co/150x150/E2E8F0/4A5568?text=Mentor" alt="Mentor Photo" class="w-32 h-32 rounded-full object-cover shadow-md">
+                    </div>
+                    <div class="text-center md:text-left">
+                        <h4 id="mentor-name" class="text-lg sm:text-xl font-bold text-gray-800"></h4>
+                        <p id="mentor-designation" class="text-md text-gray-500 mb-2"></p>
+                        <a id="mentor-linkedin" href="#" target="_blank" class="text-sm text-orange-500 hover:underline">View LinkedIn Profile →</a>
+                    </div>
+                 </div>
+                 
+                 <!-- User Details Fields -->
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+                    <div class="relative z-0 w-full mb-5 group">
+                        <input type="text" name="name" id="name" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-orange-600 peer" placeholder=" " required />
+                        <label for="name" class="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-orange-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Full Name</label>
+                    </div>
+                    <div class="relative z-0 w-full mb-5 group">
+                        <input type="email" name="email" id="email" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-orange-600 peer" placeholder=" " required />
+                        <label for="email" class="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-orange-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Email Address</label>
+                    </div>
+                    <div class="relative z-0 w-full mb-5 group">
+                         <div class="flex items-center">
+                            <span class="text-gray-500 text-sm mr-2">+91</span>
+                            <input type="tel" name="phone" id="phone" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-orange-600 peer" placeholder=" " required />
+                            <label for="phone" class="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-orange-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6" style="left: 35px;">Phone Number (10 digits)</label>
+                         </div>
+                    </div>
+                    <div class="relative z-0 w-full mb-5 group pt-1.5">
+                        <select id="user_type" name="user_type" class="block w-full border-gray-300 rounded-md shadow-sm p-2.5 focus:border-orange-500 focus:ring-orange-500 text-gray-500" required>
+                            <option value="" selected disabled>I am a...</option>
+                            <option value="student" class="text-gray-900">Student</option>
+                            <option value="self-employed" class="text-gray-900">Self-Employed</option>
+                            <option value="working-professional" class="text-gray-900">Working Professional</option>
+                        </select>
+                    </div>
+                 </div>
+
+                <div class="flex justify-between mt-8">
+                    <button type="button" onclick="showPage('page1')" class="text-white bg-gray-500 hover:bg-gray-600 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm w-full sm:w-auto px-8 py-2.5 text-center">Previous</button>
+                    <button type="button" onclick="handleNextFromBasicDetails()" class="text-white bg-orange-600 hover:bg-orange-700 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm w-full sm:w-auto px-8 py-2.5 text-center">Next</button>
+                </div>
+            </div>
+
+            <!-- Page 3a: Student Details -->
+            <div id="page3a" class="form-page">
+                <h2 class="text-lg sm:text-xl font-semibold mb-6 text-gray-700">Step 3: Student Details</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="relative z-0 w-full mb-5 group md:col-span-2">
+                        <input type="email" name="college_email" id="college_email" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-orange-600 peer" placeholder=" " required />
+                        <label for="college_email" class="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-orange-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">College Email Address</label>
+                    </div>
+                    <div class="relative z-0 w-full mb-5 group md:col-span-2">
+                        <input type="text" name="college_name" id="college_name" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-orange-600 peer" placeholder=" " required />
+                        <label for="college_name" class="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-orange-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">College Name</label>
+                    </div>
+                    <div class="relative z-0 w-full mb-5 group">
+                        <input type="text" name="department" id="department" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-orange-600 peer" placeholder=" " required />
+                        <label for="department" class="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-orange-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Department</label>
+                    </div>
+                    <div class="relative z-0 w-full mb-5 group">
+                        <input type="text" name="branch" id="branch" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-orange-600 peer" placeholder=" " required />
+                        <label for="branch" class="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-orange-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Branch</label>
+                    </div>
+                    <div>
+                        <label for="state_student" class="text-sm text-gray-500">State</label>
+                        <select id="state_student" name="state_student" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2.5 focus:border-orange-500 focus:ring-orange-500" required>
+                            <option value="">Select State</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="city_student" class="text-sm text-gray-500">City</label>
+                        <select id="city_student" name="city_student" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2.5 focus:border-orange-500 focus:ring-orange-500" required>
+                            <option value="">Select City</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex justify-between mt-8">
+                    <button type="button" onclick="showPage('page2')" class="text-white bg-gray-500 hover:bg-gray-600 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm w-full sm:w-auto px-8 py-2.5 text-center">Previous</button>
+                    <button type="button" onclick="showPage('page4')" class="text-white bg-orange-600 hover:bg-orange-700 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm w-full sm:w-auto px-8 py-2.5 text-center">Next</button>
+                </div>
+            </div>
+
+            <!-- Page 3b: Professional Details -->
+            <div id="page3b" class="form-page">
+                <h2 class="text-lg sm:text-xl font-semibold mb-6 text-gray-700">Step 3: Professional Details</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                     <div>
+                        <label for="experience" class="text-sm text-gray-500">How much experience do you have?</label>
+                        <select id="experience" name="experience" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2.5 focus:border-orange-500 focus:ring-orange-500" required>
+                            <option value="0">0 years</option>
+                            <option value="1-2">1-2 years</option>
+                            <option value="3-5">3-5 years</option>
+                            <option value="5+">5+ years</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2"></div> <!-- Spacer for mobile layout -->
+                     <div>
+                        <label for="state_prof" class="text-sm text-gray-500">State</label>
+                        <select id="state_prof" name="state_prof" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2.5 focus:border-orange-500 focus:ring-orange-500" required>
+                            <option value="">Select State</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="city_prof" class="text-sm text-gray-500">City</label>
+                        <select id="city_prof" name="city_prof" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2.5 focus:border-orange-500 focus:ring-orange-500" required>
+                            <option value="">Select City</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex justify-between mt-8">
+                    <button type="button" onclick="showPage('page2')" class="text-white bg-gray-500 hover:bg-gray-600 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm w-full sm:w-auto px-8 py-2.5 text-center">Previous</button>
+                    <button type="button" onclick="showPage('page4')" class="text-white bg-orange-600 hover:bg-orange-700 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm w-full sm:w-auto px-8 py-2.5 text-center">Next</button>
+                </div>
+            </div>
+            
+            <!-- Page 4: Payment -->
+            <div id="page4" class="form-page">
+                 <h2 class="text-lg sm:text-xl font-semibold mb-6 text-gray-700">Step 4: Finalize Payment</h2>
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                     <div>
+                        <label for="course_month" class="text-sm text-gray-500">Starting Month</label>
+                        <select id="course_month" name="course_month" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2.5 focus:border-orange-500 focus:ring-orange-500" required>
+                            <!-- Options will be populated by JavaScript -->
+                        </select>
+                    </div>
+                    <div>
+                        <label for="payment_type" class="text-sm text-gray-500">Payment Option</label>
+                        <select id="payment_type" name="payment_type" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2.5 focus:border-orange-500 focus:ring-orange-500" required>
+                            <option value="full">Full Payment</option>
+                            <option value="installment">Registration Fee + 2 Installments</option>
+                        </select>
+                    </div>
+                    <div class="relative z-0 w-full mb-5 group md:col-span-2">
+                        <input type="text" name="coupon" id="coupon" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-orange-600 peer" placeholder=" " />
+                        <label for="coupon" class="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-orange-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Discount Coupon (Optional)</label>
+                    </div>
+                 </div>
+                 <div id="payment-summary" class="mt-4 p-4 bg-gray-50 rounded-lg">
+                     <h3 class="font-semibold text-gray-800">Payment Summary</h3>
+                     <div id="discount-message" class="text-sm text-green-600 mt-1 leading-relaxed"></div>
+                     <div class="text-lg font-bold text-orange-600 mt-2">Amount to Pay Now: <span id="amount-to-pay"></span></div>
+                 </div>
+                <div class="flex justify-between mt-8">
+                    <button type="button" onclick="handleBackFromPayment()" class="text-white bg-gray-500 hover:bg-gray-600 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm w-full sm:w-auto px-8 py-2.5 text-center">Previous</button>
+                    <button type="button" id="paymentButton" class="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm w-full sm:w-auto px-8 py-2.5 text-center">Continue to Payment</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // --- Form State & Pricing ---
+        let currentPageId = 'page1';
+        const REGISTRATION_FEE = 1; // Using 1 for testing
+        const coursePrices = {
+            'Blended': 1,
+            'Mentorship': 1,
+            'Self-Paced': 1
+        };
+        const mmCouponPrices = {
+            'Blended': 1,
+            'Mentorship': 1,
+            'Self-Paced': 1
+        };
+
+        // --- Course Details & Mentor Info ---
+        const courseDetails = {
+            'Data Science': {
+                description: "Dive deep into data analysis, visualization, and machine learning models. Learn to extract meaningful insights from complex datasets using Python, Pandas, and Scikit-learn.",
+                mentor: { name: "Aarav Sharma", designation: "Lead Data Scientist", linkedin: "#", image: "https://i.pravatar.cc/150?u=aarav" }
+            },
+            'Web Development': {
+                description: "Master front-end and back-end technologies to build modern, responsive web applications. Covers HTML, CSS, JavaScript, React, and Node.js.",
+                mentor: { name: "Priya Singh", designation: "Senior Full-Stack Engineer", linkedin: "#", image: "https://i.pravatar.cc/150?u=priya" }
+            },
+            'Digital Marketing': {
+                description: "Learn the strategies to grow online businesses, from SEO and SEM to social media marketing and content strategy. Drive traffic and convert leads.",
+                mentor: { name: "Rohan Mehta", designation: "Digital Marketing Head", linkedin: "#", image: "https://i.pravatar.cc/150?u=rohan" }
+            },
+            'Default': {
+                description: "Learn from the best in the industry with our expert-led course. Gain practical skills and hands-on experience to advance your career.",
+                mentor: { name: "Industry Expert", designation: "Lead Professional", linkedin: "#", image: "https://placehold.co/150x150/EA580C/ffffff?text=Expert" }
+            }
+        };
+
+        // --- Location Data ---
+        const locationData = {
+            "Andhra Pradesh": ["Visakhapatnam", "Vijayawada", "Guntur"], "Arunachal Pradesh": ["Itanagar", "Naharlagun"], "Assam": ["Guwahati", "Dibrugarh", "Silchar"], "Bihar": ["Patna", "Gaya", "Bhagalpur"], "Chhattisgarh": ["Raipur", "Bhilai", "Bilaspur"], "Goa": ["Panaji", "Margao"], "Gujarat": ["Ahmedabad", "Surat", "Vadodara"], "Haryana": ["Faridabad", "Gurugram", "Panipat"], "Himachal Pradesh": ["Shimla", "Manali"], "Jharkhand": ["Ranchi", "Jamshedpur", "Dhanbad"], "Karnataka": ["Bengaluru", "Mysuru", "Hubballi"], "Kerala": ["Thiruvananthapuram", "Kochi", "Kozhikode"], "Madhya Pradesh": ["Indore", "Bhopal", "Jabalpur"], "Maharashtra": ["Mumbai", "Pune", "Nagpur"], "Manipur": ["Imphal"], "Meghalaya": ["Shillong"], "Mizoram": ["Aizawl"], "Nagaland": ["Kohima", "Dimapur"], "Odisha": ["Bhubaneswar", "Cuttack", "Rourkela"], "Punjab": ["Ludhiana", "Amritsar", "Jalandhar"], "Rajasthan": ["Jaipur", "Jodhpur", "Udaipur"], "Sikkim": ["Gangtok"], "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai"], "Telangana": ["Hyderabad", "Warangal", "Nizamabad"], "Tripura": ["Agartala"], "Uttar Pradesh": ["Lucknow", "Kanpur", "Ghaziabad"], "Uttarakhand": ["Dehradun", "Haridwar"], "West Bengal": ["Kolkata", "Asansol", "Siliguri"],
+        };
+
+        // --- DOM Elements ---
+        const progressBar = document.getElementById('progressBar');
+        const paymentButton = document.getElementById('paymentButton');
+        const form = document.getElementById('studentForm');
+        const couponInput = document.getElementById('coupon');
+        const discountMessage = document.getElementById('discount-message');
+        const courseTypeSelect = document.getElementById('course_type');
+        const courseMonthSelect = document.getElementById('course_month');
+        const paymentTypeSelect = document.getElementById('payment_type');
+        const amountToPaySpan = document.getElementById('amount-to-pay');
+        const courseNameSelect = document.getElementById('course_name');
+        const phoneInput = document.getElementById('phone');
+        const userTypeSelect = document.getElementById('user_type');
+
+        // --- Page Navigation ---
+        function showPage(pageId) {
+            if (pageId !== 'page1' && !validatePage(currentPageId)) { return; }
+            document.querySelectorAll('.form-page').forEach(page => page.classList.remove('active-page'));
+            document.getElementById(pageId).classList.add('active-page');
+            currentPageId = pageId;
+            if (pageId === 'page4') { calculateFinalAmount(); }
+            updateProgressBar();
+        }
+
+        function handleNextFromCourseSelection() {
+            if (!validatePage('page1')) return;
+            const selectedCourse = courseNameSelect.value;
+            const details = courseDetails[selectedCourse] || courseDetails['Default'];
+
+            document.getElementById('mentor-course-title').textContent = selectedCourse;
+            document.getElementById('mentor-course-description').textContent = details.description;
+            document.getElementById('mentor-name').textContent = details.mentor.name;
+            document.getElementById('mentor-designation').textContent = details.mentor.designation;
+            document.getElementById('mentor-image').src = details.mentor.image;
+            document.getElementById('mentor-linkedin').href = details.mentor.linkedin;
+
+            showPage('page2');
+        }
+
+        function handleNextFromBasicDetails() {
+            if (!validatePage('page2')) return;
+            const userType = userTypeSelect.value;
+            if (userType === 'student') {
+                showPage('page3a');
+            } else if (userType === 'self-employed' || userType === 'working-professional') {
+                showPage('page3b');
+            } else {
+                alert('Please select your role.');
+            }
+        }
+
+        function handleBackFromPayment() {
+            const userType = userTypeSelect.value;
+            if (userType === 'student') {
+                showPage('page3a');
+            } else {
+                showPage('page3b');
+            }
+        }
+
+        function updateProgressBar() {
+            let step = 1;
+            if (currentPageId === 'page2') step = 2;
+            if (currentPageId.startsWith('page3')) step = 3;
+            if (currentPageId === 'page4') step = 4;
+            progressBar.style.width = `${(step / 4) * 100}%`;
+        }
+
+        // --- Validation ---
+        function validatePage(pageId) {
+            const page = document.getElementById(pageId);
+            if (!page) return false;
+            const inputs = page.querySelectorAll('input[required], select[required]');
+            let isValid = true;
+            inputs.forEach(input => {
+                const parent = input.closest('.relative') || input.parentElement;
+                parent.classList.remove('border-red-500');
+                if (!input.value) {
+                    isValid = false;
+                    parent.classList.add('border-red-500');
+                    input.classList.add('border-red-500');
+                } else {
+                    input.classList.remove('border-red-500');
+                }
+            });
+            if (!isValid) { alert('Please fill out all required fields.'); }
+            return isValid;
+        }
+        
+        // --- Phone Number Input Restriction ---
+        phoneInput.addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 10);
+        });
+
+        // --- User Type Dropdown Color Change ---
+        userTypeSelect.addEventListener('change', (e) => {
+            if (e.target.value) {
+                e.target.classList.remove('text-gray-500');
+                e.target.classList.add('text-gray-900');
+            }
+        });
+
+        // --- Location Dropdown Population ---
+        function populateStates(stateSelectElement) {
+            for (const state in locationData) {
+                const option = document.createElement('option');
+                option.value = state;
+                option.textContent = state;
+                stateSelectElement.appendChild(option);
+            }
+        }
+
+        function populateCities(state, citySelectElement) {
+            citySelectElement.innerHTML = '<option value="">Select City</option>';
+            if (state && locationData[state]) {
+                locationData[state].forEach(city => {
+                    const option = document.createElement('option');
+                    option.value = city;
+                    option.textContent = city;
+                    citySelectElement.appendChild(option);
+                });
+            }
+        }
+        
+        document.getElementById('state_student').addEventListener('change', (e) => populateCities(e.target.value, document.getElementById('city_student')));
+        document.getElementById('state_prof').addEventListener('change', (e) => populateCities(e.target.value, document.getElementById('city_prof')));
+
+        // --- Dynamic Month Population ---
+        function populateCourseMonths() {
+            const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            const now = new Date();
+            const currentDay = now.getDate();
+            let startMonthIndex = (currentDay >= 5) ? now.getMonth() + 1 : now.getMonth();
+            courseMonthSelect.innerHTML = '';
+            for (let i = 0; i < 4; i++) {
+                const monthIndex = (startMonthIndex + i) % 12;
+                const year = now.getFullYear() + Math.floor((startMonthIndex + i) / 12);
+                const option = document.createElement('option');
+                option.value = `${months[monthIndex]} ${year}`;
+                option.textContent = `${months[monthIndex]} ${year}`;
+                courseMonthSelect.appendChild(option);
+            }
+        }
+
+        // --- Payment Calculation ---
+        function calculateFinalAmount() {
+            const selectedCourseType = courseTypeSelect.value;
+            const baseAmount = coursePrices[selectedCourseType];
+            const couponCode = couponInput.value.trim().toUpperCase();
+            let discountedAmount = baseAmount;
+            let summaryText = '';
+
+            if (couponCode === 'MM') {
+                discountedAmount = mmCouponPrices[selectedCourseType];
+                summaryText = `Success! Coupon "MM" applied.<br>`;
+            } else if (couponCode === 'DISCOUNT10') {
+                discountedAmount = baseAmount * 0.90;
+                summaryText = `Success! 10% discount applied.<br>`;
+            }
+
+            const paymentType = paymentTypeSelect.value;
+            let amountToPayNow;
+            if (paymentType === 'installment') {
+                amountToPayNow = REGISTRATION_FEE;
+                const remaining = discountedAmount - amountToPayNow;
+                summaryText += `You are paying the registration fee now. The remaining balance of ₹${remaining.toFixed(2)} will be collected in 2 separate installments.`;
+            } else {
+                amountToPayNow = discountedAmount;
+            }
+            
+            discountMessage.innerHTML = summaryText;
+            amountToPaySpan.textContent = `₹${amountToPayNow.toFixed(2)}`;
+            
+            return { amountToPayNow, totalCourseAmount: discountedAmount };
+        }
+
+        couponInput.addEventListener('input', calculateFinalAmount);
+        paymentTypeSelect.addEventListener('change', calculateFinalAmount);
+        courseTypeSelect.addEventListener('change', calculateFinalAmount);
+
+        // --- Razorpay Payment Integration ---
+        paymentButton.addEventListener('click', () => {
+             if (!validatePage(currentPageId)) return;
+            
+            const razorpayKeyId = 'rzp_live_Ea7BqQYsVO8vbL'; 
+
+            const formData = new FormData(form);
+            const studentData = Object.fromEntries(formData.entries());
+
+            // Consolidate state and city
+            if (studentData.user_type === 'student') {
+                studentData.state = document.getElementById('state_student').value;
+                studentData.city = document.getElementById('city_student').value;
+            } else {
+                studentData.state = document.getElementById('state_prof').value;
+                studentData.city = document.getElementById('city_prof').value;
+            }
+
+            const { amountToPayNow } = calculateFinalAmount();
+
+            const options = {
+                "key": razorpayKeyId,
+                "amount": amountToPayNow * 100, // Amount in paise
+                "currency": "INR",
+                "name": "Your Company Name",
+                "description": `Payment for ${studentData.course_name}`,
+                "image": "https://placehold.co/150x150/EA580C/ffffff?text=YC",
+                "handler": function (response){
+                    alert("Payment Successful! Payment ID: " + response.razorpay_payment_id);
+                    document.body.innerHTML = `<div class="text-center p-10">
+                        <h1 class="text-3xl font-bold text-green-600">Payment Successful!</h1>
+                        <p class="mt-4 text-lg">Thank you for your registration.</p>
+                        <p class="mt-2 text-gray-600">Your Payment ID is: ${response.razorpay_payment_id}</p>
+                    </div>`;
+                },
+                "prefill": {
+                    "name": studentData.name,
+                    "email": studentData.email,
+                    "contact": `+91${studentData.phone}`
+                },
+                "notes": {
+                    "course_name": studentData.course_name,
+                    "course_type": studentData.course_type,
+                    "course_month": studentData.course_month,
+                    "payment_type": studentData.payment_type,
+                    "coupon_used": studentData.coupon,
+                    "location": `${studentData.city}, ${studentData.state}`
+                },
+                "theme": {
+                    "color": "#EA580C"
+                }
+            };
+
+            const rzp1 = new Razorpay(options);
+            
+            rzp1.on('payment.failed', function (response){
+                alert("Payment Failed! Error: " + response.error.description);
+                console.error("Payment Failed Response:", response);
+            });
+            
+            rzp1.open();
+        });
+
+
+        // --- Initial Setup ---
+        window.onload = () => {
+            populateStates(document.getElementById('state_student'));
+            populateStates(document.getElementById('state_prof'));
+            populateCourseMonths();
+            showPage('page1');
+        };
+    </script>
+
+</body>
+</html>
