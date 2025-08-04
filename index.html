@@ -12,43 +12,70 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            background: linear-gradient(-45deg, #1e1b4b, #312e81, #4f46e5, #3b0764);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
         }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
         .form-page { display: none; animation: fadeIn 0.5s; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
         .active-page { display: block; }
-        .progress-bar-fill { transition: width 0.4s ease-in-out; }
+        .progress-bar-fill { transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        
         /* Custom focus color for floating labels */
         .peer:focus ~ label, .peer:not(:placeholder-shown) ~ label {
              --tw-text-opacity: 1;
-             color: rgb(234 88 12 / var(--tw-text-opacity));
+             color: #a78bfa; /* violet-400 */
+        }
+        
+        .payment-option {
+            transition: all 0.2s ease-in-out;
+        }
+        .payment-option.selected {
+            border-color: #8b5cf6; /* purple-500 */
+            background-color: #1e293b; /* slate-800 */
+            box-shadow: 0 0 0 2px #8b5cf6;
+            transform: scale(1.02);
+        }
+        .form-input-group:focus-within {
+            box-shadow: 0 0 0 2px #8b5cf6;
         }
     </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+<body class="flex items-center justify-center min-h-screen p-4">
 
     <!-- Main container with responsive padding -->
-    <div class="w-full max-w-3xl bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8 m-4">
+    <div class="w-full max-w-3xl bg-slate-800/60 backdrop-blur-xl border border-slate-700/50 rounded-xl shadow-2xl p-4 sm:p-6 md:p-8 m-4">
         <!-- Responsive title -->
-        <h1 id="formTitle" class="text-xl sm:text-2xl font-bold text-center text-gray-800 mb-2">Registration</h1>
-        <p class="text-center text-gray-500 mb-6">Complete the steps to enroll.</p>
+        <h1 id="formTitle" class="text-xl sm:text-2xl font-bold text-center text-white mb-2">Registration</h1>
+        <p class="text-center text-slate-400 mb-6">Complete the steps to enroll.</p>
 
         <!-- Progress Bar (now 4 steps) -->
-        <div class="w-full bg-gray-200 rounded-full h-2.5 mb-8">
-            <div id="progressBar" class="bg-orange-600 h-2.5 rounded-full progress-bar-fill" style="width: 25%;"></div>
+        <div class="w-full bg-slate-700 rounded-full h-2.5 mb-8">
+            <div id="progressBar" class="bg-gradient-to-r from-purple-500 to-indigo-600 h-2.5 rounded-full progress-bar-fill" style="width: 25%;"></div>
         </div>
 
         <!-- Form Container -->
         <form id="studentForm">
             <!-- Page 1: Course Selection -->
             <div id="page1" class="form-page active-page">
-                <h2 class="text-lg sm:text-xl font-semibold mb-6 text-gray-700">Step 1: Choose Your Course</h2>
+                <h2 class="flex items-center text-lg sm:text-xl font-semibold mb-6 text-slate-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-purple-400"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg>
+                    Step 1: Choose Your Course
+                </h2>
                 <div class="grid grid-cols-1 gap-6">
                     <div>
-                        <label for="course_name" class="text-sm text-gray-500">Course</label>
-                        <select id="course_name" name="course_name" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2.5 focus:border-orange-500 focus:ring-orange-500" required>
+                        <label for="course_name" class="text-sm text-slate-400">Course</label>
+                        <select id="course_name" name="course_name" class="mt-1 block w-full bg-slate-700 border-slate-600 text-white rounded-md shadow-sm p-2.5 focus:border-purple-500 focus:ring-purple-500 focus:ring-2 transition" required>
                            <optgroup label="TECHNICAL/CSE DOMAINS">
                                <option>Data Science</option>
                                <option>Artificial Intelligence</option>
@@ -98,8 +125,8 @@
                         </select>
                     </div>
                     <div>
-                        <label for="course_type" class="text-sm text-gray-500">Type of Course</label>
-                        <select id="course_type" name="course_type" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2.5 focus:border-orange-500 focus:ring-orange-500" required>
+                        <label for="course_type" class="text-sm text-slate-400">Type of Course</label>
+                        <select id="course_type" name="course_type" class="mt-1 block w-full bg-slate-700 border-slate-600 text-white rounded-md shadow-sm p-2.5 focus:border-purple-500 focus:ring-purple-500 focus:ring-2 transition" required>
                             <option value="Blended">Blended</option>
                             <option value="Mentorship">Mentorship</option>
                             <option value="Self-Paced">Self-Paced</option>
@@ -108,107 +135,122 @@
                 </div>
                 <div class="flex justify-end mt-8">
                     <!-- Responsive button -->
-                    <button type="button" onclick="handleNextFromCourseSelection()" class="text-white bg-orange-600 hover:bg-orange-700 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm w-full sm:w-auto px-8 py-2.5 text-center">Next</button>
+                    <button type="button" onclick="handleNextFromCourseSelection()" class="text-white bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm w-full sm:w-auto px-8 py-2.5 text-center transition-all duration-200 hover:scale-105 active:scale-100 shadow-lg shadow-purple-500/30">Next</button>
                 </div>
             </div>
 
             <!-- Page 2: Basic Details & Mentor Info -->
             <div id="page2" class="form-page">
-                 <h2 class="text-lg sm:text-xl font-semibold mb-1 text-gray-700">Step 2: Your Details</h2>
-                 <h3 id="mentor-course-title" class="text-base sm:text-lg font-bold text-orange-600 mb-4"></h3>
-                 <p id="mentor-course-description" class="text-gray-600 mb-6"></p>
+                 <h2 id="page2-title" class="flex items-center text-lg sm:text-xl font-semibold mb-1 text-slate-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-purple-400"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                 </h2>
+                 <p id="mentor-course-description" class="text-slate-400 mb-6"></p>
 
                  <!-- Responsive mentor section -->
-                 <div class="flex flex-col md:flex-row items-center bg-gray-50 p-4 sm:p-6 rounded-lg mb-8">
-                    <div class="flex-shrink-0 mb-4 md:mb-0 md:mr-6">
-                        <img id="mentor-image" src="https://placehold.co/150x150/E2E8F0/4A5568?text=Mentor" alt="Mentor Photo" class="w-32 h-32 rounded-full object-cover shadow-md">
+                 <div class="flex flex-col md:flex-row items-center bg-slate-700/50 border border-slate-700 p-4 sm:p-6 rounded-lg mb-8">
+                    <div class="flex-shrink-0 mb-4 md:mb-0 md:mr-6 text-center">
+                        <img id="mentor-image" src="https://placehold.co/150x150/E2E8F0/4A5568?text=Mentor" alt="Mentor Photo" class="w-32 h-32 rounded-full object-cover shadow-md mx-auto border-4 border-slate-600">
+                        <p class="text-xs text-slate-500 mt-1">(Mentor)</p>
                     </div>
                     <div class="text-center md:text-left">
-                        <h4 id="mentor-name" class="text-lg sm:text-xl font-bold text-gray-800"></h4>
-                        <p id="mentor-designation" class="text-md text-gray-500 mb-2"></p>
-                        <a id="mentor-linkedin" href="#" target="_blank" class="text-sm text-orange-500 hover:underline">View LinkedIn Profile →</a>
+                        <h4 id="mentor-name" class="text-lg sm:text-xl font-bold text-white"></h4>
+                        <p id="mentor-designation" class="text-md text-slate-400 mb-2"></p>
+                        <a id="mentor-linkedin" href="#" target="_blank" class="text-sm text-purple-400 hover:underline">View LinkedIn Profile →</a>
                     </div>
                  </div>
                  
                  <!-- User Details Fields -->
                  <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6">
                     <div class="relative z-0 w-full mb-5 group">
-                        <input type="text" name="name" id="name" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-orange-600 peer" placeholder=" " required />
-                        <label for="name" class="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-orange-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Full Name</label>
+                        <input type="text" name="name" id="name" class="block py-2.5 px-0 w-full text-sm text-white bg-transparent border-0 border-b-2 border-slate-600 appearance-none focus:outline-none focus:ring-0 focus:border-purple-500 peer transition" placeholder=" " required />
+                        <label for="name" class="peer-focus:font-medium absolute text-sm text-slate-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-purple-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Full Name</label>
                     </div>
                     <div class="relative z-0 w-full mb-5 group">
-                        <input type="email" name="email" id="email" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-orange-600 peer" placeholder=" " required />
-                        <label for="email" class="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-orange-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Email Address</label>
+                        <input type="email" name="email" id="email" class="block py-2.5 px-0 w-full text-sm text-white bg-transparent border-0 border-b-2 border-slate-600 appearance-none focus:outline-none focus:ring-0 focus:border-purple-500 peer transition" placeholder=" " required />
+                        <label for="email" class="peer-focus:font-medium absolute text-sm text-slate-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-purple-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Email Address</label>
                     </div>
                     <div class="relative z-0 w-full mb-5 group">
                          <div class="flex items-center">
-                            <span class="text-gray-500 text-sm mr-2">+91</span>
-                            <input type="tel" name="phone" id="phone" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-orange-600 peer" placeholder=" " required />
-                            <label for="phone" class="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-orange-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6" style="left: 35px;">Phone Number (10 digits)</label>
+                            <span class="text-slate-400 text-sm mr-2">+91</span>
+                            <input type="tel" name="phone" id="phone" class="block py-2.5 px-0 w-full text-sm text-white bg-transparent border-0 border-b-2 border-slate-600 appearance-none focus:outline-none focus:ring-0 focus:border-purple-500 peer transition" placeholder=" " required />
+                            <label for="phone" class="peer-focus:font-medium absolute text-sm text-slate-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-purple-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6" style="left: 35px;">Phone Number (10 digits)</label>
                          </div>
                     </div>
-                    <div class="relative z-0 w-full mb-5 group pt-1.5">
-                        <select id="user_type" name="user_type" class="block w-full border-gray-300 rounded-md shadow-sm p-2.5 focus:border-orange-500 focus:ring-orange-500 text-gray-500" required>
-                            <option value="" selected disabled>I am a...</option>
-                            <option value="student" class="text-gray-900">Student</option>
-                            <option value="self-employed" class="text-gray-900">Self-Employed</option>
-                            <option value="working-professional" class="text-gray-900">Working Professional</option>
+                    <div class="relative z-0 w-full mb-5 group self-end">
+                        <select id="user_type" name="user_type" class="block w-full bg-slate-700 border-slate-600 rounded-md shadow-sm p-2.5 focus:border-purple-500 focus:ring-purple-500 focus:ring-2 text-slate-400 transition" required>
+                            <option value="" selected disabled>Designation</option>
+                            <option value="student" class="text-white">Student</option>
+                            <option value="self-employed" class="text-white">Self-Employed</option>
+                            <option value="working-professional" class="text-white">Working Professional</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <select id="course_month" name="course_month" class="block w-full bg-slate-700 border-slate-600 rounded-md shadow-sm p-2.5 focus:border-purple-500 focus:ring-purple-500 focus:ring-2 text-slate-400 transition" required>
+                            <option value="" selected disabled>Select Batch Month</option>
+                            <!-- Options will be populated by JavaScript -->
                         </select>
                     </div>
                  </div>
 
                 <div class="flex justify-between mt-8">
-                    <button type="button" onclick="showPage('page1')" class="text-white bg-gray-500 hover:bg-gray-600 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm w-full sm:w-auto px-8 py-2.5 text-center">Previous</button>
-                    <button type="button" onclick="handleNextFromBasicDetails()" class="text-white bg-orange-600 hover:bg-orange-700 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm w-full sm:w-auto px-8 py-2.5 text-center">Next</button>
+                    <button type="button" onclick="showPage('page1')" class="text-white bg-slate-700 hover:bg-slate-600 focus:ring-4 focus:outline-none focus:ring-slate-500 font-medium rounded-lg text-sm w-full sm:w-auto px-8 py-2.5 text-center transition active:scale-95">Previous</button>
+                    <button type="button" onclick="handleNextFromBasicDetails()" class="text-white bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm w-full sm:w-auto px-8 py-2.5 text-center transition-all duration-200 hover:scale-105 active:scale-100 shadow-lg shadow-purple-500/30">Next</button>
                 </div>
             </div>
 
             <!-- Page 3a: Student Details -->
             <div id="page3a" class="form-page">
-                <h2 class="text-lg sm:text-xl font-semibold mb-6 text-gray-700">Step 3: Student Details</h2>
+                <h2 class="flex items-center text-lg sm:text-xl font-semibold mb-6 text-slate-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-purple-400"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg>
+                    Step 3: Student Details
+                </h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="relative z-0 w-full mb-5 group md:col-span-2">
-                        <input type="email" name="college_email" id="college_email" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-orange-600 peer" placeholder=" " required />
-                        <label for="college_email" class="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-orange-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">College Email Address</label>
-                    </div>
-                    <div class="relative z-0 w-full mb-5 group md:col-span-2">
-                        <input type="text" name="college_name" id="college_name" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-orange-600 peer" placeholder=" " required />
-                        <label for="college_name" class="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-orange-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">College Name</label>
+                        <input type="text" name="college_name" id="college_name" class="block py-2.5 px-0 w-full text-sm text-white bg-transparent border-0 border-b-2 border-slate-600 appearance-none focus:outline-none focus:ring-0 focus:border-purple-500 peer transition" placeholder=" " required />
+                        <label for="college_name" class="peer-focus:font-medium absolute text-sm text-slate-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-purple-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">College Name</label>
                     </div>
                     <div class="relative z-0 w-full mb-5 group">
-                        <input type="text" name="department" id="department" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-orange-600 peer" placeholder=" " required />
-                        <label for="department" class="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-orange-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Department</label>
+                        <input type="text" name="department" id="department" class="block py-2.5 px-0 w-full text-sm text-white bg-transparent border-0 border-b-2 border-slate-600 appearance-none focus:outline-none focus:ring-0 focus:border-purple-500 peer transition" placeholder=" " required />
+                        <label for="department" class="peer-focus:font-medium absolute text-sm text-slate-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-purple-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Department</label>
                     </div>
                     <div class="relative z-0 w-full mb-5 group">
-                        <input type="text" name="branch" id="branch" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-orange-600 peer" placeholder=" " required />
-                        <label for="branch" class="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-orange-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Branch</label>
+                        <input type="text" name="branch" id="branch" class="block py-2.5 px-0 w-full text-sm text-white bg-transparent border-0 border-b-2 border-slate-600 appearance-none focus:outline-none focus:ring-0 focus:border-purple-500 peer transition" placeholder=" " required />
+                        <label for="branch" class="peer-focus:font-medium absolute text-sm text-slate-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-purple-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Branch</label>
                     </div>
+                    
+                    <div class="md:col-span-2 mt-4">
+                        <h3 class="text-md font-semibold text-slate-300 mb-2">Address</h3>
+                    </div>
+
                     <div>
-                        <label for="state_student" class="text-sm text-gray-500">State</label>
-                        <select id="state_student" name="state_student" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2.5 focus:border-orange-500 focus:ring-orange-500" required>
+                        <label for="state_student" class="text-sm text-slate-400">State</label>
+                        <select id="state_student" name="state_student" class="mt-1 block w-full bg-slate-700 border-slate-600 text-white rounded-md shadow-sm p-2.5 focus:border-purple-500 focus:ring-purple-500 focus:ring-2 transition" required>
                             <option value="">Select State</option>
                         </select>
                     </div>
                     <div>
-                        <label for="city_student" class="text-sm text-gray-500">City</label>
-                        <select id="city_student" name="city_student" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2.5 focus:border-orange-500 focus:ring-orange-500" required>
+                        <label for="city_student" class="text-sm text-slate-400">City</label>
+                        <select id="city_student" name="city_student" class="mt-1 block w-full bg-slate-700 border-slate-600 text-white rounded-md shadow-sm p-2.5 focus:border-purple-500 focus:ring-purple-500 focus:ring-2 transition" required>
                             <option value="">Select City</option>
                         </select>
                     </div>
                 </div>
                 <div class="flex justify-between mt-8">
-                    <button type="button" onclick="showPage('page2')" class="text-white bg-gray-500 hover:bg-gray-600 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm w-full sm:w-auto px-8 py-2.5 text-center">Previous</button>
-                    <button type="button" onclick="showPage('page4')" class="text-white bg-orange-600 hover:bg-orange-700 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm w-full sm:w-auto px-8 py-2.5 text-center">Next</button>
+                    <button type="button" onclick="showPage('page2')" class="text-white bg-slate-700 hover:bg-slate-600 focus:ring-4 focus:outline-none focus:ring-slate-500 font-medium rounded-lg text-sm w-full sm:w-auto px-8 py-2.5 text-center transition active:scale-95">Previous</button>
+                    <button type="button" onclick="showPage('page4')" class="text-white bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm w-full sm:w-auto px-8 py-2.5 text-center transition-all duration-200 hover:scale-105 active:scale-100 shadow-lg shadow-purple-500/30">Next</button>
                 </div>
             </div>
 
             <!-- Page 3b: Professional Details -->
             <div id="page3b" class="form-page">
-                <h2 class="text-lg sm:text-xl font-semibold mb-6 text-gray-700">Step 3: Professional Details</h2>
+                <h2 class="flex items-center text-lg sm:text-xl font-semibold mb-6 text-slate-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-purple-400"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    Step 3: Professional Details
+                </h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                      <div>
-                        <label for="experience" class="text-sm text-gray-500">How much experience do you have?</label>
-                        <select id="experience" name="experience" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2.5 focus:border-orange-500 focus:ring-orange-500" required>
+                        <label for="experience" class="text-sm text-slate-400">How much experience do you have?</label>
+                        <select id="experience" name="experience" class="mt-1 block w-full bg-slate-700 border-slate-600 text-white rounded-md shadow-sm p-2.5 focus:border-purple-500 focus:ring-purple-500 focus:ring-2 transition" required>
                             <option value="0">0 years</option>
                             <option value="1-2">1-2 years</option>
                             <option value="3-5">3-5 years</option>
@@ -216,55 +258,75 @@
                         </select>
                     </div>
                     <div class="md:col-span-2"></div> <!-- Spacer for mobile layout -->
+                    <div class="md:col-span-2 mt-4">
+                        <h3 class="text-md font-semibold text-slate-300 mb-2">Address</h3>
+                    </div>
                      <div>
-                        <label for="state_prof" class="text-sm text-gray-500">State</label>
-                        <select id="state_prof" name="state_prof" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2.5 focus:border-orange-500 focus:ring-orange-500" required>
+                        <label for="state_prof" class="text-sm text-slate-400">State</label>
+                        <select id="state_prof" name="state_prof" class="mt-1 block w-full bg-slate-700 border-slate-600 text-white rounded-md shadow-sm p-2.5 focus:border-purple-500 focus:ring-purple-500 focus:ring-2 transition" required>
                             <option value="">Select State</option>
                         </select>
                     </div>
                     <div>
-                        <label for="city_prof" class="text-sm text-gray-500">City</label>
-                        <select id="city_prof" name="city_prof" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2.5 focus:border-orange-500 focus:ring-orange-500" required>
+                        <label for="city_prof" class="text-sm text-slate-400">City</label>
+                        <select id="city_prof" name="city_prof" class="mt-1 block w-full bg-slate-700 border-slate-600 text-white rounded-md shadow-sm p-2.5 focus:border-purple-500 focus:ring-purple-500 focus:ring-2 transition" required>
                             <option value="">Select City</option>
                         </select>
                     </div>
                 </div>
                 <div class="flex justify-between mt-8">
-                    <button type="button" onclick="showPage('page2')" class="text-white bg-gray-500 hover:bg-gray-600 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm w-full sm:w-auto px-8 py-2.5 text-center">Previous</button>
-                    <button type="button" onclick="showPage('page4')" class="text-white bg-orange-600 hover:bg-orange-700 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-lg text-sm w-full sm:w-auto px-8 py-2.5 text-center">Next</button>
+                    <button type="button" onclick="showPage('page2')" class="text-white bg-slate-700 hover:bg-slate-600 focus:ring-4 focus:outline-none focus:ring-slate-500 font-medium rounded-lg text-sm w-full sm:w-auto px-8 py-2.5 text-center transition active:scale-95">Previous</button>
+                    <button type="button" onclick="showPage('page4')" class="text-white bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm w-full sm:w-auto px-8 py-2.5 text-center transition-all duration-200 hover:scale-105 active:scale-100 shadow-lg shadow-purple-500/30">Next</button>
                 </div>
             </div>
             
             <!-- Page 4: Payment -->
             <div id="page4" class="form-page">
-                 <h2 class="text-lg sm:text-xl font-semibold mb-6 text-gray-700">Step 4: Finalize Payment</h2>
-                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                     <div>
-                        <label for="course_month" class="text-sm text-gray-500">Starting Month</label>
-                        <select id="course_month" name="course_month" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2.5 focus:border-orange-500 focus:ring-orange-500" required>
-                            <!-- Options will be populated by JavaScript -->
-                        </select>
+                 <h2 class="flex items-center text-lg sm:text-xl font-semibold mb-6 text-slate-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-purple-400"><rect width="20" height="14" x="2" y="5" rx="2"></rect><line x1="2" x2="22" y1="10" y2="10"></line></svg>
+                    Step 4: Finalize Payment
+                </h2>
+                 
+                 <div class="mb-6">
+                    <label class="text-sm text-slate-400 mb-2 block">Payment Option</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div id="payment-option-full" class="payment-option selected cursor-pointer border-2 border-slate-600 rounded-lg p-4 text-center hover:border-purple-500" onclick="selectPaymentOption('full')">
+                            <h3 class="font-semibold text-white">Full Payment</h3>
+                            <p class="text-sm text-slate-400">Pay the total amount now.</p>
+                        </div>
+                        <div id="payment-option-installment" class="payment-option cursor-pointer border-2 border-slate-600 rounded-lg p-4 text-center hover:border-purple-500" onclick="selectPaymentOption('installment')">
+                            <h3 class="font-semibold text-white">Installment Plan</h3>
+                            <p class="text-sm text-slate-400">Pay registration fee now.</p>
+                        </div>
                     </div>
-                    <div>
-                        <label for="payment_type" class="text-sm text-gray-500">Payment Option</label>
-                        <select id="payment_type" name="payment_type" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2.5 focus:border-orange-500 focus:ring-orange-500" required>
-                            <option value="full">Full Payment</option>
-                            <option value="installment">Registration Fee + 2 Installments</option>
-                        </select>
-                    </div>
-                    <div class="relative z-0 w-full mb-5 group md:col-span-2">
-                        <input type="text" name="coupon" id="coupon" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-orange-600 peer" placeholder=" " />
-                        <label for="coupon" class="peer-focus:font-medium absolute text-sm text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-orange-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Discount Coupon (Optional)</label>
-                    </div>
+                    <input type="hidden" id="payment_type" name="payment_type" value="full">
                  </div>
-                 <div id="payment-summary" class="mt-4 p-4 bg-gray-50 rounded-lg">
-                     <h3 class="font-semibold text-gray-800">Payment Summary</h3>
-                     <div id="discount-message" class="text-sm text-green-600 mt-1 leading-relaxed"></div>
-                     <div class="text-lg font-bold text-orange-600 mt-2">Amount to Pay Now: <span id="amount-to-pay"></span></div>
+
+                 <div id="payment-summary" class="mt-4 p-4 bg-slate-700/50 border border-slate-700 rounded-lg">
+                     <h3 class="font-semibold text-white mb-3">Payment Summary</h3>
+                     <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Course:</span>
+                            <span id="summary-course-name" class="font-medium text-slate-200"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Type:</span>
+                            <span id="summary-course-type" class="font-medium text-slate-200"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Batch:</span>
+                            <span id="summary-course-month" class="font-medium text-slate-200"></span>
+                        </div>
+                     </div>
+                     <hr class="my-3 border-slate-600">
+                     <div class="text-lg font-bold text-purple-400 mt-2 flex justify-between">
+                        <span>Amount to Pay Now:</span>
+                        <span id="amount-to-pay"></span>
+                    </div>
                  </div>
                 <div class="flex justify-between mt-8">
-                    <button type="button" onclick="handleBackFromPayment()" class="text-white bg-gray-500 hover:bg-gray-600 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm w-full sm:w-auto px-8 py-2.5 text-center">Previous</button>
-                    <button type="button" id="paymentButton" class="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm w-full sm:w-auto px-8 py-2.5 text-center">Continue to Payment</button>
+                    <button type="button" onclick="handleBackFromPayment()" class="text-white bg-slate-700 hover:bg-slate-600 focus:ring-4 focus:outline-none focus:ring-slate-500 font-medium rounded-lg text-sm w-full sm:w-auto px-8 py-2.5 text-center transition active:scale-95">Previous</button>
+                    <button type="button" id="paymentButton" class="text-white bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm w-full sm:w-auto px-8 py-2.5 text-center transition-all duration-200 hover:scale-105 active:scale-100 shadow-lg shadow-green-500/30">Continue to Payment</button>
                 </div>
             </div>
         </form>
@@ -273,16 +335,11 @@
     <script>
         // --- Form State & Pricing ---
         let currentPageId = 'page1';
-        const REGISTRATION_FEE = 1; // Using 1 for testing
+        const REGISTRATION_FEE = 100; 
         const coursePrices = {
-            'Blended': 1,
-            'Mentorship': 1,
-            'Self-Paced': 1
-        };
-        const mmCouponPrices = {
-            'Blended': 1,
-            'Mentorship': 1,
-            'Self-Paced': 1
+            'Blended': 300,
+            'Mentorship': 300,
+            'Self-Paced': 300
         };
 
         // --- Course Details & Mentor Info ---
@@ -314,11 +371,9 @@
         const progressBar = document.getElementById('progressBar');
         const paymentButton = document.getElementById('paymentButton');
         const form = document.getElementById('studentForm');
-        const couponInput = document.getElementById('coupon');
-        const discountMessage = document.getElementById('discount-message');
         const courseTypeSelect = document.getElementById('course_type');
         const courseMonthSelect = document.getElementById('course_month');
-        const paymentTypeSelect = document.getElementById('payment_type');
+        const paymentTypeInput = document.getElementById('payment_type');
         const amountToPaySpan = document.getElementById('amount-to-pay');
         const courseNameSelect = document.getElementById('course_name');
         const phoneInput = document.getElementById('phone');
@@ -330,7 +385,7 @@
             document.querySelectorAll('.form-page').forEach(page => page.classList.remove('active-page'));
             document.getElementById(pageId).classList.add('active-page');
             currentPageId = pageId;
-            if (pageId === 'page4') { calculateFinalAmount(); }
+            if (pageId === 'page4') { updatePaymentSummary(); }
             updateProgressBar();
         }
 
@@ -339,7 +394,8 @@
             const selectedCourse = courseNameSelect.value;
             const details = courseDetails[selectedCourse] || courseDetails['Default'];
 
-            document.getElementById('mentor-course-title').textContent = selectedCourse;
+            const page2Title = document.getElementById('page2-title');
+            page2Title.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 text-purple-400"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> ${selectedCourse}`;
             document.getElementById('mentor-course-description').textContent = details.description;
             document.getElementById('mentor-name').textContent = details.mentor.name;
             document.getElementById('mentor-designation').textContent = details.mentor.designation;
@@ -404,12 +460,14 @@
             e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 10);
         });
 
-        // --- User Type Dropdown Color Change ---
-        userTypeSelect.addEventListener('change', (e) => {
-            if (e.target.value) {
-                e.target.classList.remove('text-gray-500');
-                e.target.classList.add('text-gray-900');
-            }
+        // --- Dropdown Color Change ---
+        [userTypeSelect, courseMonthSelect].forEach(el => {
+            el.addEventListener('change', (e) => {
+                if (e.target.value) {
+                    e.target.classList.remove('text-slate-400');
+                    e.target.classList.add('text-white');
+                }
+            });
         });
 
         // --- Location Dropdown Population ---
@@ -443,61 +501,62 @@
             const now = new Date();
             const currentDay = now.getDate();
             let startMonthIndex = (currentDay >= 5) ? now.getMonth() + 1 : now.getMonth();
-            courseMonthSelect.innerHTML = '';
+            
+            // Clear existing options but keep the placeholder
+            courseMonthSelect.innerHTML = '<option value="" selected disabled>Select Batch Month</option>';
+
             for (let i = 0; i < 4; i++) {
                 const monthIndex = (startMonthIndex + i) % 12;
                 const year = now.getFullYear() + Math.floor((startMonthIndex + i) / 12);
                 const option = document.createElement('option');
                 option.value = `${months[monthIndex]} ${year}`;
                 option.textContent = `${months[monthIndex]} ${year}`;
+                option.classList.add('text-white');
                 courseMonthSelect.appendChild(option);
             }
         }
 
-        // --- Payment Calculation ---
-        function calculateFinalAmount() {
+        // --- Payment Calculation & Summary Update ---
+        function updatePaymentSummary() {
+            // Update summary details
+            document.getElementById('summary-course-name').textContent = courseNameSelect.value;
+            document.getElementById('summary-course-type').textContent = courseTypeSelect.value;
+            document.getElementById('summary-course-month').textContent = courseMonthSelect.value;
+
+            // Calculate amount
             const selectedCourseType = courseTypeSelect.value;
             const baseAmount = coursePrices[selectedCourseType];
-            const couponCode = couponInput.value.trim().toUpperCase();
-            let discountedAmount = baseAmount;
-            let summaryText = '';
-
-            if (couponCode === 'MM') {
-                discountedAmount = mmCouponPrices[selectedCourseType];
-                summaryText = `Success! Coupon "MM" applied.<br>`;
-            } else if (couponCode === 'DISCOUNT10') {
-                discountedAmount = baseAmount * 0.90;
-                summaryText = `Success! 10% discount applied.<br>`;
-            }
-
-            const paymentType = paymentTypeSelect.value;
+            const paymentType = paymentTypeInput.value;
+            
             let amountToPayNow;
             if (paymentType === 'installment') {
                 amountToPayNow = REGISTRATION_FEE;
-                const remaining = discountedAmount - amountToPayNow;
-                summaryText += `You are paying the registration fee now. The remaining balance of ₹${remaining.toFixed(2)} will be collected in 2 separate installments.`;
             } else {
-                amountToPayNow = discountedAmount;
+                amountToPayNow = baseAmount;
             }
             
-            discountMessage.innerHTML = summaryText;
             amountToPaySpan.textContent = `₹${amountToPayNow.toFixed(2)}`;
-            
-            return { amountToPayNow, totalCourseAmount: discountedAmount };
+            return { amountToPayNow };
         }
 
-        couponInput.addEventListener('input', calculateFinalAmount);
-        paymentTypeSelect.addEventListener('change', calculateFinalAmount);
-        courseTypeSelect.addEventListener('change', calculateFinalAmount);
+        function selectPaymentOption(option) {
+            paymentTypeInput.value = option;
+            document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('selected'));
+            document.getElementById(`payment-option-${option}`).classList.add('selected');
+            updatePaymentSummary();
+        }
+
 
         // --- Razorpay Payment Integration ---
-        paymentButton.addEventListener('click', () => {
+        paymentButton.addEventListener('click', async () => { // Made this function async
              if (!validatePage(currentPageId)) return;
             
-            const razorpayKeyId = 'rzp_live_Ea7BqQYsVO8vbL'; 
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx68BlIcwsEJjxkJvA5ILigQjFLIdCsjnPATKs-gph1XC8nEmrCRrUkXWbZqJIlNhB9/exec'; // <-- YOUR GOOGLE SCRIPT URL
+            const razorpayKeyId = 'rzp_live_Ea7BqQYsVO8vbL'; // Your Key ID is used here
 
             const formData = new FormData(form);
             const studentData = Object.fromEntries(formData.entries());
+            const paymentType = paymentTypeInput.value;
 
             // Consolidate state and city
             if (studentData.user_type === 'student') {
@@ -508,21 +567,40 @@
                 studentData.city = document.getElementById('city_prof').value;
             }
 
-            const { amountToPayNow } = calculateFinalAmount();
+            const { amountToPayNow } = updatePaymentSummary();
 
+            // Base options
             const options = {
                 "key": razorpayKeyId,
-                "amount": amountToPayNow * 100, // Amount in paise
                 "currency": "INR",
                 "name": "Your Company Name",
                 "description": `Payment for ${studentData.course_name}`,
                 "image": "https://placehold.co/150x150/EA580C/ffffff?text=YC",
                 "handler": function (response){
-                    alert("Payment Successful! Payment ID: " + response.razorpay_payment_id);
+                    const paymentId = response.razorpay_payment_id || '';
+                    const subscriptionId = response.razorpay_subscription_id || '';
+                    const idToShow = subscriptionId ? `Subscription ID: ${subscriptionId}` : `Payment ID: ${paymentId}`;
+                    
+                    // Add payment/subscription IDs to the data payload
+                    studentData.payment_id = paymentId;
+                    studentData.subscription_id = subscriptionId;
+
+                    // Send data to Google Sheet
+                    fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        body: JSON.stringify(studentData),
+                        mode: 'no-cors' // Use no-cors to avoid CORS errors with Google Scripts
+                    }).then(res => {
+                        console.log('Successfully sent data to Google Sheet');
+                    }).catch(error => {
+                        console.error('Error sending data to Google Sheet:', error);
+                    });
+
+                    alert(`Payment Successful! ${idToShow}`);
                     document.body.innerHTML = `<div class="text-center p-10">
                         <h1 class="text-3xl font-bold text-green-600">Payment Successful!</h1>
                         <p class="mt-4 text-lg">Thank you for your registration.</p>
-                        <p class="mt-2 text-gray-600">Your Payment ID is: ${response.razorpay_payment_id}</p>
+                        <p class="mt-2 text-gray-600">Your ${idToShow}</p>
                     </div>`;
                 },
                 "prefill": {
@@ -535,13 +613,38 @@
                     "course_type": studentData.course_type,
                     "course_month": studentData.course_month,
                     "payment_type": studentData.payment_type,
-                    "coupon_used": studentData.coupon,
                     "location": `${studentData.city}, ${studentData.state}`
                 },
                 "theme": {
-                    "color": "#EA580C"
+                    "color": "#8b5cf6"
                 }
             };
+
+            // If installment, get subscription_id from backend
+            if (paymentType === 'installment') {
+                try {
+                    const response = await fetch('http://localhost:3000/create-subscription', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ plan_id: 'plan_Qq82PbhvLVUOlB' }), // Your actual plan_id
+                    });
+                    const data = await response.json();
+                    if (data.subscription_id) {
+                        options.subscription_id = data.subscription_id;
+                    } else {
+                        throw new Error('Failed to get subscription ID');
+                    }
+                } catch (error) {
+                    console.error('Subscription creation failed:', error);
+                    alert('Could not connect to the server. Please make sure your local server is running and try again.');
+                    return;
+                }
+            } else {
+                // For full payment, use the amount
+                options.amount = amountToPayNow * 100;
+            }
 
             const rzp1 = new Razorpay(options);
             
